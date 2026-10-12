@@ -1,5 +1,6 @@
 # 팔다(PALDA) 체험 사이트 분석
 
+- **보고서 보기: https://show2585-cmd.github.io/palda-issue/**
 - 레포지토리: https://github.com/show2585-cmd/palda-issue
 - 분석 대상: https://palda-product-interview.highpixel2022.chatgpt.site/
 
@@ -16,4 +17,4 @@
 
 ## 보는 법
 
-`index.html`을 브라우저로 열면 됩니다. 폰트(Pretendard)와 아이콘(lucide)은 CDN에서 불러옵니다.
+https://show2585-cmd.github.io/palda-issue/ 에 접속하거나, 내려받아 `index.html`을 브라우저로 열면 됩니다. 폰트(Pretendard)와 아이콘(lucide)은 CDN에서 불러옵니다.
