@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>팔다 체험 사이트 분석</title>
+  <meta name="description" content="팔다(PALDA) 제품 체험 사이트의 UI/UX 문제와 코드 기술 문제 분석">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="topbar__home" href="index.html"><i data-lucide="scan-search"></i>팔다 체험 사이트 분석</a>
+      <nav class="topbar__nav" aria-label="보고서">
+        <a href="ui-ux.html"><i data-lucide="layout-template"></i><span>UI/UX</span></a>
+        <a href="tech.html"><i data-lucide="code-xml"></i><span>코드·기술</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow"><i data-lucide="file-search"></i>제품 체험 사이트 분석 보고서</div>
+      <h1>어떤 문제부터 보시겠어요?</h1>
+      <p>직접 사용해 본 화면과 배포된 JS·CSS 번들을 함께 분석했습니다. 보고 싶은 분야를 골라 들어가세요.</p>
+      <div class="meta">
+        <span><i data-lucide="globe"></i>palda-product-interview.highpixel2022.chatgpt.site</span>
+        <span><i data-lucide="calendar"></i>2026-10-12 분석</span>
+      </div>
+    </section>
+
+    <div class="choices">
+      <a class="choice" href="ui-ux.html">
+        <div class="choice__icon"><i data-lucide="layout-template"></i></div>
+        <h2>UI/UX 문제</h2>
+        <p>사용자가 화면에서 직접 겪는 불편과 디자인 일관성 문제</p>
+        <ul>
+          <li><i data-lucide="shapes"></i>아이콘 선 두께 4종 혼재</li>
+          <li><i data-lucide="type"></i>10px 글자 과다</li>
+          <li><i data-lucide="app-window"></i>알림톡 iframe에 폰트 미적용</li>
+          <li><i data-lucide="smartphone"></i>모바일에서 핵심 기능 차단</li>
+          <li><i data-lucide="arrow-up-to-line"></i>페이지를 넘겨도 목록 맨 위로 안 감</li>
+        </ul>
+        <div class="choice__foot">
+          <span class="choice__count">문제 5건 · 높음 <b>3</b></span>
+          <span class="choice__go">보러 가기<i data-lucide="arrow-right"></i></span>
+        </div>
+      </a>
+
+      <a class="choice choice--tech" href="tech.html">
+        <div class="choice__icon"><i data-lucide="code-xml"></i></div>
+        <h2>코드 기술 문제</h2>
+        <p>기술 스택 미정의에서 시작된 번들·라우팅·스타일 구조 문제</p>
+        <ul>
+          <li><i data-lucide="layers"></i>스택 미정의: CSS 앱과 Tailwind 앱이 공존</li>
+          <li><i data-lucide="package"></i>1.1MB 단일 번들, 코드 분할 없음</li>
+          <li><i data-lucide="link-2-off"></i>새로고침하면 404가 나는 경로</li>
+          <li><i data-lucide="paintbrush"></i>공통 컴포넌트 없음, 라우터·데이터 요청 직접 구현</li>
+        </ul>
+        <div class="choice__foot">
+          <span class="choice__count">문제 6건 · 높음 <b>3</b></span>
+          <span class="choice__go">보러 가기<i data-lucide="arrow-right"></i></span>
+        </div>
+      </a>
+    </div>
+
+    <p class="footnote">근거: 실제 화면 확인 + 메인 앱(<code>index-3GmKslk6.js</code>)과 알림톡 iframe 앱(<code>/crm/index-Dnd7O0ZR.js</code>) 번들 정적 분석</p>
+  </main>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

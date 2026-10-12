@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UI/UX 문제</title>
+  <meta name="description" content="팔다(PALDA) 제품 체험 사이트의 UI/UX 문제 분석">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="topbar__home" href="index.html"><i data-lucide="scan-search"></i>팔다 체험 사이트 분석</a>
+      <nav class="topbar__nav" aria-label="보고서">
+        <a href="ui-ux.html" aria-current="page"><i data-lucide="layout-template"></i><span>UI/UX</span></a>
+        <a href="tech.html"><i data-lucide="code-xml"></i><span>코드·기술</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-head">
+      <div class="eyebrow"><i data-lucide="layout-template"></i>UI/UX 문제</div>
+      <h1>화면에서 사용자가 겪는 문제</h1>
+      <p>랜딩, 키워드 상세(네이버), 상품 분석, 알림톡 체험(iframe)과 대시보드를 직접 사용하며 확인했고, 수치는 CSS·JS 번들과 실제 DOM에서 측정했습니다.</p>
+      <div class="meta">
+        <span><i data-lucide="calendar"></i>2026-10-12</span>
+        <span><i data-lucide="monitor"></i>데스크톱 Chrome 1372px 기준</span>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat"><div class="stat__label"><i data-lucide="list"></i>전체</div><div class="stat__value" data-count="all">-</div></div>
+      <div class="stat stat--high"><div class="stat__label"><i data-lucide="circle-alert"></i>높음</div><div class="stat__value" data-count="high">-</div></div>
+      <div class="stat stat--mid"><div class="stat__label"><i data-lucide="triangle-alert"></i>중간</div><div class="stat__value" data-count="mid">-</div></div>
+    </div>
+
+    <div class="layout">
+      <aside class="toc" aria-label="목차">
+        <p class="toc__title">목차</p>
+        <ol>
+          <li><a href="#u01"><span class="toc__num">U-01</span>아이콘 선 두께가 제각각</a></li>
+          <li><a href="#u02"><span class="toc__num">U-02</span>10px 글자가 너무 많음</a></li>
+          <li><a href="#u03"><span class="toc__num">U-03</span>알림톡 iframe의 폰트·헤더 불일치</a></li>
+          <li><a href="#u04"><span class="toc__num">U-04</span>모바일에서 핵심 기능 차단</a></li>
+          <li><a href="#u05"><span class="toc__num">U-05</span>페이지를 넘겨도 맨 위로 안 감</a></li>
+          
+          
+          
+          
+        </ol>
+      </aside>
+
+      <div>
+        <div class="filter" role="group" aria-label="심각도 필터">
+          <button class="chip" data-filter="all" aria-pressed="true">전체</button>
+          <button class="chip" data-filter="high" aria-pressed="false"><i data-lucide="circle-alert"></i>높음</button>
+          <button class="chip" data-filter="mid" aria-pressed="false"><i data-lucide="triangle-alert"></i>중간</button>
+        </div>
+
+        <!-- U-01 -->
+        <article class="issue" id="u01" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="shapes"></i></div>
+            <div><div class="issue__id">U-01</div><h2>아이콘을 화면마다 따로 그려 선 두께가 제각각</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">공통 아이콘 세트 없이 SVG를 JSX에 직접 넣었습니다. 같은 24×24 아이콘인데 선 두께가 네 가지라 화면을 옮길 때마다 아이콘의 무게감이 달라집니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li>아이콘 라이브러리(lucide, heroicons, Material 등)를 쓰지 않음</li>
+              <li><code>viewBox="0 0 24 24"</code> 인라인 SVG 30개, 공통 <code>*Icon</code> 컴포넌트 이름 규칙 없음</li>
+            </ul>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>strokeWidth</th><th class="num">개수</th><th>비율</th></tr></thead>
+                <tbody>
+                  <tr><td><code>1.5</code></td><td class="num">29</td><td><div class="bar"><div class="bar__fill" style="width:120px"></div></div></td></tr>
+                  <tr><td><code>2</code></td><td class="num">8</td><td><div class="bar"><div class="bar__fill" style="width:33px"></div></div></td></tr>
+                  <tr><td><code>2.25</code></td><td class="num">2</td><td><div class="bar"><div class="bar__fill" style="width:8px"></div></div></td></tr>
+                  <tr><td><code>1</code></td><td class="num">2</td><td><div class="bar"><div class="bar__fill" style="width:8px"></div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="user-x"></i>사용자 영향</div>
+            <p>사이드바·카드·버튼의 아이콘 굵기가 서로 달라 화면이 정돈되지 않아 보이고, 같은 뜻의 아이콘이 화면마다 다르게 그려질 수 있습니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li><b>lucide-react</b> 도입: 지금 아이콘과 같은 24×24 그리드, <code>currentColor</code>, 둥근 선 끝이라 바꾸기 쉽고 쓰는 아이콘만 번들에 들어감</li>
+              <li><code>&lt;Icon name size="sm|md|lg" /&gt;</code> 래퍼로 크기와 선 두께를 디자인 토큰에 묶기 (예: 기본 1.5 하나로 통일)</li>
+              <li>브랜드·플랫폼 로고(<code>/brand/*.svg</code>)는 지금처럼 별도 에셋 유지</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- U-02 -->
+        <article class="issue" id="u02" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="type"></i></div>
+            <div><div class="issue__id">U-02</div><h2>데이터 화면에 10px 글자가 너무 많음</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">글자 크기 토큰에 <code>--palda-font-size-2xs: 10px</code>가 있고, 숫자를 읽어야 하는 키워드·상품 화면의 보조 라벨이 대부분 이 크기입니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li>키워드 상세(종합 분석) 본문 텍스트 요소 181개 중 <b>10px이 31개(17%)</b>, 12px이 83개</li>
+              <li>CSS 전체에서 <code>2xs</code>(10px) 토큰 37회 사용, 별도로 <code>font-size:9px</code>도 1곳 존재</li>
+              <li>상품 분석 목록의 <code>가격 · 6개월 판매량 · 6개월 매출 · 리뷰 · 평점 · 등록일</code> 라벨이 10px</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="user-x"></i>사용자 영향</div>
+            <p>한글 10px은 획이 뭉쳐 읽기 어렵고, 이 서비스의 주 사용자인 셀러는 숫자를 오래 비교하는 작업을 합니다. 노안이나 저해상도 모니터에서는 사실상 확대 없이 읽기 힘듭니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>본문·라벨 최소 크기를 12px로 올리고 <code>2xs</code> 토큰은 배지·차트 눈금 정도로만 제한</li>
+              <li>정보 위계는 크기 대신 굵기·색(<code>text-primary-sub</code>)으로 표현</li>
+            </ul>
+          </div>
+        </article>
+
+
+
+        <!-- U-03 -->
+        <article class="issue" id="u03" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="app-window"></i></div>
+            <div><div class="issue__id">U-03</div><h2>알림톡(iframe) 화면은 폰트부터 달라 다른 서비스처럼 보임</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">알림톡 체험(<code>/alimtalk</code>)은 별도 앱(<code>/crm/</code>)을 iframe으로 불러옵니다. 그런데 이 앱에서는 Pretendard가 제대로 적용되지 않아, 화면 글자 대부분이 Windows 기본 글꼴(맑은 고딕)로 보입니다. 바로 위 체험 바는 Pretendard라서 한 화면 안에서 글꼴이 두 가지입니다.</p>
+          <figure style="margin:0 0 4px">
+            <img src="assets/alimtalk-font.png" alt="알림톡 체험 화면. 위쪽 체험 바는 Pretendard, 그 아래 iframe의 메뉴와 큰 제목은 맑은 고딕으로 표시됨" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;display:block">
+            <figcaption style="font-size:13px;color:var(--text-faint);margin-top:6px">맨 위 회색 체험 바(부모 페이지)는 Pretendard, 그 아래 메뉴와 제목(iframe)은 맑은 고딕. Windows Chrome에서 캡처</figcaption>
+          </figure>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 (실제 화면에서 측정)</div>
+            <ul>
+              <li>iframe 안 텍스트 요소 167개 중 <b>133개(80%)</b>가 <code>font-family: Pretendard, system-ui, …</code></li>
+              <li>CDN으로 불러온 글꼴 이름은 <code>"Pretendard Variable"</code> 하나뿐이고, <code>"Pretendard"</code>라는 이름의 글꼴은 정의되지 않음 → 다음 후보인 <code>system-ui</code>(맑은 고딕)로 넘어감</li>
+              <li>같은 문장의 렌더링 너비가 <code>Pretendard</code> 지정 278.3px = 맑은 고딕 278.3px, <code>Pretendard Variable</code>은 241.4px. 실제로 다른 글꼴이 쓰이고 있음</li>
+              <li>원인은 토큰 값 차이: 메인 앱 CSS에는 <code>--palda-font-family-base</code>가 두 번 정의돼 뒤쪽 값 <code>"Pretendard Variable", Pretendard, …</code>가 적용되지만, 알림톡 앱에는 앞쪽 값 <code>Pretendard, system-ui, …</code>만 들어 있음</li>
+              <li>Tailwind 기본값 <code>html { font-family: -apple-system, "Segoe UI", Roboto, … }</code>도 남아 있어, palda 토큰·<code>--font-body</code>·Tailwind 기본값 세 가지가 섞여 있음</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 · 폰트 외에도 다른 앱처럼 보이는 부분</div>
+            <div class="table-scroll">
+              <table class="compare">
+                <thead><tr><th>항목</th><th>키워드 화면 (메인 앱)</th><th>알림톡 화면 (iframe)</th></tr></thead>
+                <tbody>
+                  <tr><td>헤더 메뉴</td><td>키워드 분석 · 알림톡 자동화</td><td>알림톡 자동화 · 보고서 · 인사이트 · 가격안내</td></tr>
+                  <tr><td>오른쪽 버튼</td><td>로그인 없이 체험</td><td>대시보드 · 내 계정</td></tr>
+                  <tr><td>키워드로 돌아가기</td><td>-</td><td>iframe 헤더에는 없음. 맨 위 체험 바로만 가능</td></tr>
+                  <tr><td>스크롤</td><td>페이지 전체</td><td>iframe 안에서만 스크롤 (스크롤바가 체험 바 아래에서 시작)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="user-x"></i>사용자 영향</div>
+            <p>키워드에서 알림톡으로 넘어가는 순간 글꼴, 헤더, 메뉴가 한꺼번에 바뀌어 다른 사이트로 이동한 것처럼 느껴집니다. 글꼴이 OS마다 다르게 보이므로 Windows와 Mac 사용자가 보는 화면도 서로 다릅니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>당장: 알림톡 앱의 <code>--palda-font-family-base</code>를 메인 앱과 같은 <code>"Pretendard Variable", Pretendard, …</code>로 맞추고, Tailwind <code>--font-sans</code>도 이 토큰으로 연결</li>
+              <li>근본: 두 앱이 같은 토큰 패키지를 쓰도록 바꾸고, 가능하면 iframe을 없애 한 앱의 라우트로 합치기 (코드 기술 T-01)</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- U-04 -->
+        <article class="issue" id="u04" data-severity="mid">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="smartphone"></i></div>
+            <div><div class="issue__id">U-04</div><h2>모바일에서 키워드 상세·상품·판매자 분석을 막아 둠</h2></div>
+            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
+          </div>
+          <p class="issue__lead">좁은 화면에서는 기능 대신 "PC에서 이용해 주세요" 안내가 뜨고, 키워드 트렌드만 볼 수 있습니다. 랜딩의 키워드 검색창도 모바일에서는 안내 문구로 바뀝니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li>번들 문구: "키워드 상세·순위 추적·상품·판매자 분석은 PC에서 제공됩니다."</li>
+              <li>정작 서비스가 보여 주는 샘플 데이터(휴대용 에어컨)도 검색 사용자 <b>모바일 88% / PC 12%</b></li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="user-x"></i>사용자 영향</div>
+            <p>이동 중에 "이 키워드 검색량만 확인"하려는 셀러는 할 수 있는 일이 없습니다. 메신저로 받은 분석 링크를 휴대폰에서 열면 바로 막힙니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>전부 막기보다 요약 지표(검색량·경쟁강도·CPC)와 추이 차트만이라도 읽기 전용으로 제공</li>
+              <li>표는 모바일에서 카드형으로 바꾸고, 깊은 분석만 "PC에서 더 보기"로 안내</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- U-05 -->
+        <article class="issue" id="u05" data-severity="mid">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="arrow-up-to-line"></i></div>
+            <div><div class="issue__id">U-05</div><h2>페이지 번호를 눌러도 목록 맨 위로 돌아가지 않음</h2></div>
+            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
+          </div>
+          <p class="issue__lead">상품 분석의 "네이버 TOP 30 상품" 목록은 10개씩 3페이지로 나뉩니다. 맨 아래 페이지 번호를 누르면 내용만 바뀌고 스크롤은 그대로라, 새 페이지의 중간부터 보게 됩니다.</p>
+          <figure style="margin:0 0 4px">
+            <img src="assets/pagination-scroll.png" alt="2페이지를 누른 직후 화면. 목록 머리글과 11~13번 상품은 화면 위로 벗어나 있고 14번 상품부터 보임" style="width:100%;height:auto;border:1px solid var(--border);border-radius:10px;display:block">
+            <figcaption style="font-size:13px;color:var(--text-faint);margin-top:6px">"러닝 조끼" 상품 분석에서 2페이지를 누른 직후. 11~13번은 화면 위에 있어 보이지 않음</figcaption>
+          </figure>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 (실제 화면에서 측정)</div>
+            <ul>
+              <li>페이지 버튼을 누르기 전과 후의 스크롤 위치가 <b>1332px로 같음</b></li>
+              <li>누른 뒤 목록 영역(<code>.npr-section</code>)의 위쪽 끝이 화면보다 <b>408px 위</b>에 있음. 목록 제목과 11~13번 상품이 보이지 않음</li>
+              <li>페이지 번호가 주소(<code>?page=</code>)에 남지 않아, 새로고침하거나 상품을 봤다가 뒤로 가면 1페이지로 돌아감</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="user-x"></i>사용자 영향</div>
+            <p>2페이지를 눌렀는데 14번부터 보이니 "11~13번이 빠졌나?" 하고 다시 위로 스크롤해야 합니다. 페이지를 넘길 때마다 같은 동작이 반복됩니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>페이지를 바꾸면 목록 제목 위치로 스크롤하고, 고정 헤더가 있으면 <code>scroll-margin-top</code>으로 높이만큼 띄우기</li>
+              <li>페이지 번호를 URL 쿼리(<code>?page=2</code>)에 남겨 새로고침과 뒤로 가기에도 유지</li>
+              <li>같은 페이지네이션을 쓰는 다른 목록에도 공통 컴포넌트로 일괄 적용</li>
+            </ul>
+          </div>
+        </article>
+
+
+
+
+
+        <h2 class="section-title">요약</h2>
+        <div class="table-scroll">
+          <table class="summary">
+            <thead><tr><th>ID</th><th>문제</th><th>우선순위</th></tr></thead>
+            <tbody>
+              <tr><td>U-01</td><td><a href="#u01">아이콘 선 두께 4종 혼재 → lucide 도입</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>U-02</td><td><a href="#u02">10px 글자 과다 → 최소 12px</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>U-03</td><td><a href="#u03">알림톡 iframe: 폰트 80% 맑은 고딕, 헤더·메뉴 상이</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>U-04</td><td><a href="#u04">모바일 핵심 기능 차단</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              <tr><td>U-05</td><td><a href="#u05">페이징 후 목록 상단으로 스크롤 안 됨, 페이지 번호 URL 미반영</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              
+              
+              
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

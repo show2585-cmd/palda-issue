@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>코드 기술 문제</title>
+  <meta name="description" content="팔다(PALDA) 제품 체험 사이트의 코드·기술 문제 분석">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="topbar__home" href="index.html"><i data-lucide="scan-search"></i>팔다 체험 사이트 분석</a>
+      <nav class="topbar__nav" aria-label="보고서">
+        <a href="ui-ux.html"><i data-lucide="layout-template"></i><span>UI/UX</span></a>
+        <a href="tech.html" aria-current="page"><i data-lucide="code-xml"></i><span>코드·기술</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-head">
+      <div class="eyebrow"><i data-lucide="code-xml"></i>코드 기술 문제</div>
+      <h1>번들과 구현 구조의 문제</h1>
+      <p>배포된 번들을 내려받아 정적으로 분석하고, 각 경로를 직접 요청해 응답을 확인했습니다. 이 사이트는 사실상 <b>서로 다른 방식으로 만든 앱 두 개</b>입니다. 키워드 분석은 메인 앱이고, 알림톡 체험(<code>/alimtalk</code>)은 iframe으로 불러오는 별도 앱 <code>/crm/</code>입니다.</p>
+      <div class="meta">
+        <span><i data-lucide="file-code"></i>메인 앱 JS 1,108KB · CSS 290KB</span>
+        <span><i data-lucide="file-code"></i>알림톡(/crm) 앱 JS 1,478KB · CSS 255KB</span>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat"><div class="stat__label"><i data-lucide="list"></i>전체</div><div class="stat__value" data-count="all">-</div></div>
+      <div class="stat stat--high"><div class="stat__label"><i data-lucide="circle-alert"></i>높음</div><div class="stat__value" data-count="high">-</div></div>
+      <div class="stat stat--mid"><div class="stat__label"><i data-lucide="triangle-alert"></i>중간</div><div class="stat__value" data-count="mid">-</div></div>
+    </div>
+
+    <div class="layout">
+      <aside class="toc" aria-label="목차">
+        <p class="toc__title">목차</p>
+        <ol>
+          <li><a href="#t01"><span class="toc__num">T-01</span>기술 스택 정의 없는 바이브 코딩</a></li>
+          <li><a href="#t02"><span class="toc__num">T-02</span>코드 분할 없는 단일 번들</a></li>
+          <li><a href="#t03"><span class="toc__num">T-03</span>새로고침하면 404인 경로</a></li>
+          <li><a href="#t04"><span class="toc__num">T-04</span>라우터 직접 구현</a></li>
+          <li><a href="#t05"><span class="toc__num">T-05</span>데이터 요청 계층 없음</a></li>
+          <li><a href="#t06"><span class="toc__num">T-06</span>공통 컴포넌트 없음 → 컴포넌트화</a></li>
+          
+          
+          
+        </ol>
+      </aside>
+
+      <div>
+        <div class="filter" role="group" aria-label="심각도 필터">
+          <button class="chip" data-filter="all" aria-pressed="true">전체</button>
+          <button class="chip" data-filter="high" aria-pressed="false"><i data-lucide="circle-alert"></i>높음</button>
+          <button class="chip" data-filter="mid" aria-pressed="false"><i data-lucide="triangle-alert"></i>중간</button>
+        </div>
+
+        <!-- T-01 -->
+        <article class="issue" id="t01" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="layers"></i></div>
+            <div><div class="issue__id">T-01 · 근본 원인</div><h2>기술 스택을 정하지 않고 바이브 코딩으로 쌓아 올림</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">한 서비스인데 화면마다 스타일링, 아이콘, 색상 체계가 다릅니다. 키워드 분석은 직접 쓴 CSS로, iframe으로 불러오는 알림톡 체험은 Tailwind로 만들었습니다. 프로젝트 차원에서 "무엇으로 만든다"는 기준을 정하지 않고, 화면 단위로 AI가 만들어 준 코드를 그대로 붙여 온 흔적이 번들 곳곳에 남아 있습니다. 이 페이지의 다른 문제(T-02~T-06)도 대부분 여기서 나옵니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 1 · 같은 서비스, 다른 스택</div>
+            <div class="table-scroll">
+              <table class="compare">
+                <thead><tr><th>항목</th><th>메인 앱 (키워드 분석)</th><th>알림톡 앱 (<code>/crm/</code>, iframe)</th></tr></thead>
+                <tbody>
+                  <tr><td>스타일링</td><td>직접 쓴 CSS (BEM) + CSS Modules</td><td><b>Tailwind CSS v4</b> 유틸리티 669종 + palda CSS</td></tr>
+                  <tr><td>색상 토큰</td><td><code>--palda-*</code> (보라 <code>#6466fa</code>)</td><td><code>--palda-*</code> + shadcn 기본 토큰 <code>--primary</code>, <code>--muted-foreground</code>, <code>--accent: oklch(…)</code></td></tr>
+                  <tr><td>회색 계열</td><td><code>--palda-gray-*</code> 하나</td><td><code>palda-gray</code> + Tailwind <code>gray</code>·<code>zinc</code>·<code>slate</code>·<code>neutral</code> <b>5종</b></td></tr>
+                  <tr><td>아이콘</td><td>인라인 SVG 30개 (선 두께 4종)</td><td>lucide-react</td></tr>
+                  <tr><td>UI 기본 부품</td><td>직접 구현</td><td>Radix UI (Select, Popper 등)</td></tr>
+                  <tr><td>라우팅</td><td>History API 직접 구현</td><td>History API + <code>hashchange</code> 직접 구현 (또 다른 방식)</td></tr>
+                  <tr><td>차트·검증</td><td>Recharts, Zod</td><td>없음</td></tr>
+                  <tr><td>앱 사이 통신</td><td colspan="2"><code>postMessage</code> (<code>palda-demo:navigate</code>, <code>palda-demo:crm-state</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 2 · 사람이 정했다면 나오기 힘든 값</div>
+            <ul>
+              <li>알림톡 앱의 글자 크기 임의값: <code>text-[6.736px]</code>, <code>text-[7.858px]</code>, <code>text-[8.14px]</code>, <code>text-[8.981px]</code>, <code>text-[15.385px]</code>, <code>text-[22.222px]</code> 등 <b>18종</b>. 디자인 시안을 비율대로 환산한 값이 그대로 들어감</li>
+              <li>Tailwind 임의값(<code>[…]</code>) 573회. 그중 <code>bg-[#F9F9F9]</code>와 <code>bg-[#f9f9f9]</code>처럼 대소문자만 다른 같은 색이 따로 존재</li>
+              <li>메인 앱에도 <code>font-size: 11.894px</code>가 있고, 이 값은 알림톡 앱에도 똑같이 나옴. 같은 계산 결과를 양쪽에 복사한 것</li>
+              <li>shadcn/ui 기본 토큰(<code>--card-foreground</code>, <code>--popover</code>, <code>--destructive</code> …)이 palda 토큰과 나란히 정의됨. 템플릿을 그대로 가져온 뒤 정리하지 않음</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 3 · 중복 비용</div>
+            <ul>
+              <li>React 19.2.8이 두 번들에 <b>각각 통째로</b> 들어 있음. 알림톡 체험까지 보면 JS 합계 <b>2.59MB</b> (gzip 약 764KB)</li>
+              <li>palda 디자인 시스템 CSS가 양쪽에 복사됨: 완전히 같은 CSS 규칙 <b>430개(약 60KB)</b>가 두 파일에 중복</li>
+              <li>같은 회사 색인데 메인 앱 hex 64종, 알림톡 앱 hex 79종이 따로 존재</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
+            <ul>
+              <li><b>일관성:</b> 키워드 화면과 알림톡 화면의 버튼·회색·아이콘이 미묘하게 달라 한 제품처럼 보이지 않음 (UI/UX U-01, U-02의 원인)</li>
+              <li><b>유지보수:</b> 브랜드 색 하나를 바꾸려면 palda 토큰, shadcn 토큰, Tailwind 임의 hex를 모두 찾아 고쳐야 함. 새로 들어온 개발자는 "이 화면은 무엇으로 만들지"부터 판단해야 함</li>
+              <li><b>성능:</b> 같은 라이브러리와 CSS를 두 번 내려받음</li>
+              <li><b>품질 관리:</b> 기준이 없으니 코드 리뷰에서 "틀렸다"고 말할 근거도 없음. AI가 만든 코드가 그대로 쌓임</li>
+            </ul>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li><b>기술 스택 문서(ADR)부터 작성:</b> 스타일링(Tailwind냐 CSS Modules냐 하나만), 아이콘(lucide), UI 기본 부품(Radix), 라우터, 데이터 요청, 차트를 결정하고 기록</li>
+              <li><b>디자인 토큰 단일화:</b> <code>--palda-*</code>를 유일한 기준으로 두고, Tailwind를 쓴다면 <code>@theme</code>에 palda 토큰을 연결. Tailwind 기본 팔레트와 shadcn 기본 토큰은 제거</li>
+              <li><b>AI 코드 생성에 규칙 주입:</b> 프로젝트 규칙 파일(CLAUDE.md, .cursorrules 등)에 스택과 토큰을 명시하고, ESLint·Stylelint로 임의값(<code>text-[7.858px]</code>, <code>bg-[#…]</code>)을 막아 CI에서 걸러냄</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- T-02 -->
+        <article class="issue" id="t02" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="package"></i></div>
+            <div><div class="issue__id">T-02</div><h2>앱 전체가 JS 파일 하나로 나감 (코드 분할 없음)</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">랜딩만 보는 사용자도 키워드 분석·상품 분석·키워드 비교·Recharts까지 전부 내려받고 파싱합니다. 알림톡 체험에 들어가면 iframe 앱 JS 1,478KB를 따로 또 받습니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li>JS 1개 1,108KB (gzip 312KB). 동적 <code>import()</code> 0회, <code>React.lazy</code> 0회</li>
+              <li>번들 안 <code>Suspense</code> 10회는 모두 React 내부 코드. 앱 코드에서 쓰는 곳 없음</li>
+              <li>Recharts(+ 내부 Redux Toolkit)가 메인 번들에 포함. 차트는 키워드·상품 화면에서만 사용</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
+            <p>빠른 회선에서는 체감이 적지만, 모바일 회선과 저사양 기기에서는 첫 화면 표시와 상호작용 가능 시점이 늦어집니다. 한 화면만 고쳐도 해시가 바뀌어 사용자는 1.1MB를 통째로 다시 받습니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>화면(라우트) 단위로 코드를 나눠, 사용자가 들어간 화면의 코드만 불러오기</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- T-03 -->
+        <article class="issue" id="t03" data-severity="high">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="link-2-off"></i></div>
+            <div><div class="issue__id">T-03</div><h2>앱 안에서 쓰는 경로인데 새로고침·직접 접속하면 404</h2></div>
+            <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
+          </div>
+          <p class="issue__lead">정적 호스팅에 SPA 대체(fallback) 규칙이 없어, 경로마다 디렉터리가 있는 곳만 열립니다. 알림톡 대시보드 주소를 직접 열면 브라우저 오류 페이지가 뜹니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 (curl 직접 요청)</div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>경로</th><th>응답</th><th>비고</th></tr></thead>
+                <tbody>
+                  <tr><td><code>/dashboard/100000001/alimtalk</code></td><td><span class="badge badge--high">404</span></td><td>번들이 <code>/dashboard</code>를 이 주소로 연결</td></tr>
+                  <tr><td><code>/products</code>, <code>/products/</code></td><td><span class="badge badge--high">404</span></td><td>번들 라우트 목록에 있음</td></tr>
+                  <tr><td><code>/keywords</code> 외 12개</td><td><span class="badge badge--mid">307</span></td><td><code>/keywords/</code>로 리디렉트 후 200 (요청 1번 추가)</td></tr>
+                  <tr><td><code>/</code>, <code>/dashboard/</code></td><td><span class="badge badge--low">200</span></td><td>정상</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
+            <p>분석 화면 링크를 공유하거나, 그 화면에서 새로고침하면 오류 페이지가 뜹니다. 사용자는 "사이트가 깨졌다"고 느낍니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>호스팅에 "없는 경로는 <code>/index.html</code>로" 규칙 추가 (Cloudflare Pages <code>_redirects</code>: <code>/* /index.html 200</code>)</li>
+              <li>앱 쪽에는 알 수 없는 경로용 404 화면을 따로 두기</li>
+              <li>슬래시 유무를 하나로 정해 307 왕복 제거</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- T-04 -->
+        <article class="issue" id="t04" data-severity="mid">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="route"></i></div>
+            <div><div class="issue__id">T-04</div><h2>라우터를 직접 구현함</h2></div>
+            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
+          </div>
+          <p class="issue__lead">react-router 같은 라이브러리 없이 History API로 라우팅합니다. 경로가 20개 가까이 되고 플랫폼(naver/coupang)과 탭(products/related)이 중첩돼 있어 직접 관리하기엔 큽니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li><code>pushState</code> 3회, <code>replaceState</code> 7회, <code>popstate</code> 리스너 10회</li>
+              <li>경로 예: <code>/keywords/naver/related</code>, <code>/keywords/coupang/products</code>, <code>/keywords/compare</code>, <code>/products/coupang</code></li>
+              <li>경로 분기를 문자열 비교로 처리: <code>t==="/dashboard"?"/dashboard/100000001/alimtalk":e</code> (샘플 스토어 ID 하드코딩)</li>
+            </ul>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>React Router 또는 TanStack Router로 교체 → 중첩 라우트, 라우트별 lazy(T-02), 404 처리, 스크롤 복원을 함께 해결</li>
+              <li>타입 있는 경로 파라미터(<code>:platform</code>, <code>:storeId</code>)로 하드코딩 제거</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- T-05 -->
+        <article class="issue" id="t05" data-severity="mid">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="database"></i></div>
+            <div><div class="issue__id">T-05</div><h2>데이터 요청 계층이 없음</h2></div>
+            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
+          </div>
+          <p class="issue__lead"><code>fetch</code> + <code>useEffect</code> + <code>AbortController</code>를 화면마다 직접 씁니다. 캐싱·중복 요청 제거·재시도·로딩/에러 상태가 공통으로 처리되지 않습니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
+            <ul>
+              <li><code>fetch(</code> 6곳, <code>AbortController</code> 14곳. TanStack Query·SWR·axios 없음</li>
+              <li>API: <code>/api/auth/session</code>, <code>/api/categories/0/children</code>, <code>/api/keyword-details/overview</code>, <code>/api/keyword-details/naver-related-products</code>, <code>/api/proposals/rank-targets</code>, <code>/api/analysis/capture-backed</code></li>
+              <li>체험 도메인에서 API는 샘플 JSON을 200으로 응답 (예: 세션 <code>{"user":{"id":900001,"name":"체험 사용자"}}</code>)</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
+            <p>카테고리 목록처럼 바뀌지 않는 데이터도 화면을 옮길 때마다 다시 받을 수 있고, 요청 실패 시 화면마다 처리 방식이 달라집니다.</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li>TanStack Query 도입, API 호출을 <code>api/</code> 모듈 한곳에 모으기</li>
+              <li>응답 스키마 검증과 공통 에러 화면 연결</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- T-06 -->
+        <article class="issue" id="t06" data-severity="mid">
+          <div class="issue__head">
+            <div class="issue__icon"><i data-lucide="component"></i></div>
+            <div><div class="issue__id">T-06</div><h2>공통 컴포넌트 없이 화면마다 스타일을 새로 만듦 → 컴포넌트화 필요</h2></div>
+            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
+          </div>
+          <p class="issue__lead">표, 카드, 탭처럼 여러 화면에 반복되는 UI를 공통 컴포넌트로 만들지 않고, 화면마다 새 클래스 이름(접두어)을 붙여 스타일을 다시 작성했습니다. <code>palda-</code> 디자인 시스템이 있는데도 화면 전용 접두어가 20여 종 생긴 이유입니다.</p>
+          <div class="block">
+            <div class="block__label"><i data-lucide="microscope"></i>근거 · 화면마다 생긴 접두어 (CSS 안 등장 횟수 상위)</div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>접두어</th><th class="num">횟수</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td><code>.palda-</code></td><td class="num">766</td><td><div class="bar"><div class="bar__fill" style="width:160px"></div></div></td></tr>
+                  <tr><td><code>.kw-</code></td><td class="num">689</td><td><div class="bar"><div class="bar__fill" style="width:144px"></div></div></td></tr>
+                  <tr><td><code>.cca-</code></td><td class="num">365</td><td><div class="bar"><div class="bar__fill" style="width:76px"></div></div></td></tr>
+                  <tr><td><code>.ks-</code></td><td class="num">218</td><td><div class="bar"><div class="bar__fill" style="width:46px"></div></div></td></tr>
+                  <tr><td><code>.npr-</code></td><td class="num">170</td><td><div class="bar"><div class="bar__fill" style="width:36px"></div></div></td></tr>
+                  <tr><td><code>.keyword-</code></td><td class="num">155</td><td><div class="bar"><div class="bar__fill" style="width:32px"></div></div></td></tr>
+                  <tr><td><code>.trend-</code></td><td class="num">131</td><td><div class="bar"><div class="bar__fill" style="width:27px"></div></div></td></tr>
+                  <tr><td><code>.landing-</code> 외 15종</td><td class="num">…</td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul style="margin-top:10px">
+              <li><code>kw-</code>와 <code>keyword-</code>처럼 같은 뜻의 접두어가 공존</li>
+              <li>CSS Modules 해시 클래스(<code>._historyTable_1oo22_466</code> 등) 66개가 전역 클래스와 섞임</li>
+              <li><b>같은 "표"가 5가지로 따로 구현됨:</b> <code>palda-table</code>, <code>trend-table</code>(45회), <code>kw-table-wrap</code>, <code>comparison-demo-table</code>, <code>cca-exposure-table</code></li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
+            <p>표의 머리글 고정이나 정렬처럼 하나를 개선해도 다섯 군데를 따로 고쳐야 하고, 한 곳만 고치면 화면마다 동작이 달라집니다. 화면 수가 늘수록 CSS도 그만큼 커집니다(현재 290KB).</p>
+          </div>
+          <div class="block block--fix">
+            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
+            <ul>
+              <li><b>반복 UI를 공통 컴포넌트로 만들기:</b> 표(Table), 카드, 탭, 페이지네이션, 지표 카드 등을 palda 디자인 시스템 컴포넌트로 만들고 모든 화면에서 재사용</li>
+              <li><b>화면 CSS는 배치만:</b> 각 화면은 컴포넌트를 조합하고 간격·배치만 정하며, 색·글자·표 모양은 컴포넌트와 토큰에서만 정의</li>
+              <li><b>컴포넌트 목록 관리:</b> Storybook 같은 카탈로그로 이미 있는 컴포넌트를 먼저 찾아 쓰게 하고, 새로 만들 때는 리뷰를 거치게 함</li>
+              <li>메인 앱과 알림톡 앱이 같은 컴포넌트 패키지를 쓰도록 연결 (T-01)</li>
+            </ul>
+          </div>
+        </article>
+
+
+
+
+        <h2 class="section-title">요약</h2>
+        <div class="table-scroll">
+          <table class="summary">
+            <thead><tr><th>ID</th><th>문제</th><th>우선순위</th></tr></thead>
+            <tbody>
+              <tr><td>T-01</td><td><a href="#t01">기술 스택 미정의 · 바이브 코딩 (CSS vs Tailwind, 앱 2개)</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>T-02</td><td><a href="#t02">1.1MB 단일 번들, 코드 분할 없음</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>T-03</td><td><a href="#t03">SPA fallback 없음 → 일부 경로 404</a></td><td><span class="badge badge--high">높음</span></td></tr>
+              <tr><td>T-04</td><td><a href="#t04">라우터 직접 구현, 스토어 ID 하드코딩</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              <tr><td>T-05</td><td><a href="#t05">fetch + useEffect 직접 사용</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              <tr><td>T-06</td><td><a href="#t06">공통 컴포넌트 없이 화면마다 스타일 재작성 (접두어 20여 종, 표 5종)</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              
+              
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
