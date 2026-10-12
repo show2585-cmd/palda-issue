@@ -24,10 +24,6 @@
       <div class="eyebrow"><i data-lucide="code-xml"></i>코드 기술 문제</div>
       <h1>번들과 구현 구조의 문제</h1>
       <p>배포된 번들을 내려받아 정적으로 분석하고, 각 경로를 직접 요청해 응답을 확인했습니다. 이 사이트는 사실상 <b>서로 다른 방식으로 만든 앱 두 개</b>입니다. 키워드 분석은 메인 앱이고, 알림톡 체험(<code>/alimtalk</code>)은 iframe으로 불러오는 별도 앱 <code>/crm/</code>입니다.</p>
-      <div class="meta">
-        <span><i data-lucide="file-code"></i>메인 앱 JS 1,108KB · CSS 290KB</span>
-        <span><i data-lucide="file-code"></i>알림톡(/crm) 앱 JS 1,478KB · CSS 255KB</span>
-      </div>
     </section>
 
     <div class="stats">
@@ -44,8 +40,7 @@
           <li><a href="#t02"><span class="toc__num">T-02</span>코드 분할 없는 단일 번들</a></li>
           <li><a href="#t03"><span class="toc__num">T-03</span>새로고침하면 404인 경로</a></li>
           <li><a href="#t04"><span class="toc__num">T-04</span>라우터 직접 구현</a></li>
-          <li><a href="#t05"><span class="toc__num">T-05</span>데이터 요청 계층 없음</a></li>
-          <li><a href="#t06"><span class="toc__num">T-06</span>공통 컴포넌트 없음 → 컴포넌트화</a></li>
+          <li><a href="#t05"><span class="toc__num">T-05</span>공통 컴포넌트 없음 → 컴포넌트화</a></li>
           
           
           
@@ -66,7 +61,7 @@
             <div><div class="issue__id">T-01 · 근본 원인</div><h2>기술 스택을 정하지 않고 바이브 코딩으로 쌓아 올림</h2></div>
             <span class="badge badge--high"><i data-lucide="circle-alert"></i>높음</span>
           </div>
-          <p class="issue__lead">한 서비스인데 화면마다 스타일링, 아이콘, 색상 체계가 다릅니다. 키워드 분석은 직접 쓴 CSS로, iframe으로 불러오는 알림톡 체험은 Tailwind로 만들었습니다. 프로젝트 차원에서 "무엇으로 만든다"는 기준을 정하지 않고, 화면 단위로 AI가 만들어 준 코드를 그대로 붙여 온 흔적이 번들 곳곳에 남아 있습니다. 이 페이지의 다른 문제(T-02~T-06)도 대부분 여기서 나옵니다.</p>
+          <p class="issue__lead">한 서비스인데 화면마다 스타일링, 아이콘, 색상 체계가 다릅니다. 키워드 분석은 직접 쓴 CSS로, iframe으로 불러오는 알림톡 체험은 Tailwind로 만들었습니다. 프로젝트 차원에서 "무엇으로 만든다"는 기준을 정하지 않고, 화면 단위로 AI가 만들어 준 코드를 그대로 붙여 온 흔적이 번들 곳곳에 남아 있습니다. 이 페이지의 다른 문제(T-02~T-05)도 대부분 여기서 나옵니다.</p>
           <div class="block">
             <div class="block__label"><i data-lucide="microscope"></i>근거 1 · 같은 서비스, 다른 스택</div>
             <div class="table-scroll">
@@ -213,37 +208,8 @@
         <!-- T-05 -->
         <article class="issue" id="t05" data-severity="mid">
           <div class="issue__head">
-            <div class="issue__icon"><i data-lucide="database"></i></div>
-            <div><div class="issue__id">T-05</div><h2>데이터 요청 계층이 없음</h2></div>
-            <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
-          </div>
-          <p class="issue__lead"><code>fetch</code> + <code>useEffect</code> + <code>AbortController</code>를 화면마다 직접 씁니다. 캐싱·중복 요청 제거·재시도·로딩/에러 상태가 공통으로 처리되지 않습니다.</p>
-          <div class="block">
-            <div class="block__label"><i data-lucide="microscope"></i>근거</div>
-            <ul>
-              <li><code>fetch(</code> 6곳, <code>AbortController</code> 14곳. TanStack Query·SWR·axios 없음</li>
-              <li>API: <code>/api/auth/session</code>, <code>/api/categories/0/children</code>, <code>/api/keyword-details/overview</code>, <code>/api/keyword-details/naver-related-products</code>, <code>/api/proposals/rank-targets</code>, <code>/api/analysis/capture-backed</code></li>
-              <li>체험 도메인에서 API는 샘플 JSON을 200으로 응답 (예: 세션 <code>{"user":{"id":900001,"name":"체험 사용자"}}</code>)</li>
-            </ul>
-          </div>
-          <div class="block">
-            <div class="block__label"><i data-lucide="gauge"></i>영향</div>
-            <p>카테고리 목록처럼 바뀌지 않는 데이터도 화면을 옮길 때마다 다시 받을 수 있고, 요청 실패 시 화면마다 처리 방식이 달라집니다.</p>
-          </div>
-          <div class="block block--fix">
-            <div class="block__label"><i data-lucide="wrench"></i>개선 방향</div>
-            <ul>
-              <li>TanStack Query 도입, API 호출을 <code>api/</code> 모듈 한곳에 모으기</li>
-              <li>응답 스키마 검증과 공통 에러 화면 연결</li>
-            </ul>
-          </div>
-        </article>
-
-        <!-- T-06 -->
-        <article class="issue" id="t06" data-severity="mid">
-          <div class="issue__head">
             <div class="issue__icon"><i data-lucide="component"></i></div>
-            <div><div class="issue__id">T-06</div><h2>공통 컴포넌트 없이 화면마다 스타일을 새로 만듦 → 컴포넌트화 필요</h2></div>
+            <div><div class="issue__id">T-05</div><h2>공통 컴포넌트 없이 화면마다 스타일을 새로 만듦 → 컴포넌트화 필요</h2></div>
             <span class="badge badge--mid"><i data-lucide="triangle-alert"></i>중간</span>
           </div>
           <p class="issue__lead">표, 카드, 탭처럼 여러 화면에 반복되는 UI를 공통 컴포넌트로 만들지 않고, 화면마다 새 클래스 이름(접두어)을 붙여 스타일을 다시 작성했습니다. <code>palda-</code> 디자인 시스템이 있는데도 화면 전용 접두어가 20여 종 생긴 이유입니다.</p>
@@ -297,8 +263,7 @@
               <tr><td>T-02</td><td><a href="#t02">1.1MB 단일 번들, 코드 분할 없음</a></td><td><span class="badge badge--high">높음</span></td></tr>
               <tr><td>T-03</td><td><a href="#t03">SPA fallback 없음 → 일부 경로 404</a></td><td><span class="badge badge--high">높음</span></td></tr>
               <tr><td>T-04</td><td><a href="#t04">라우터 직접 구현, 스토어 ID 하드코딩</a></td><td><span class="badge badge--mid">중간</span></td></tr>
-              <tr><td>T-05</td><td><a href="#t05">fetch + useEffect 직접 사용</a></td><td><span class="badge badge--mid">중간</span></td></tr>
-              <tr><td>T-06</td><td><a href="#t06">공통 컴포넌트 없이 화면마다 스타일 재작성 (접두어 20여 종, 표 5종)</a></td><td><span class="badge badge--mid">중간</span></td></tr>
+              <tr><td>T-05</td><td><a href="#t05">공통 컴포넌트 없이 화면마다 스타일 재작성 (접두어 20여 종, 표 5종)</a></td><td><span class="badge badge--mid">중간</span></td></tr>
               
               
               
